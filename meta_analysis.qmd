@@ -10,16 +10,11 @@ editor:
     wrap: 72
 ---
 
-# Importing dependencies: meta package, here, and dpylr. Optional (for studymap): tmap, rnaturalearth, and rnaturalearthdata
+# Importing dependencies: meta package, here, and dpylr
 ```{r}
 library(meta)
 library(here)
 library(dplyr)
-
-#For study map 
-library(tmap)
-library(rnaturalearth)
-library(rnaturalearthdata)
 ```
 
 # Source of functions for later.
@@ -192,27 +187,4 @@ o_reg_exp
 pm_reg_all
 no_reg_all
 o_reg_all
-```
-
-# World map visualizations (study level country representation)
-```{r}
-world_study <- read.csv(here("data", "world_study.csv"), header = T, sep = ",")
-country_count <- as.data.frame(table(world_study$Setting))
-colnames(country_count) <- c("country", "study_count")
-world_1 <- merge(world, country_count, by.x = "name", by.y = "country", all.x = TRUE)
-
-study_palette <- colorRampPalette(c("lightblue", "blue"))(5)
-
-tmap_mode("plot")
-tmap_style("white")
-world_studies <- tm_shape(world_1) +
-  tm_fill(col = "study_count", 
-          palette = study_palette, 
-          style = "fixed", breaks = c(1,2,3,4,5),
-          legend.show = TRUE,
-          title = "Study Count") +
-          tm_borders(col = "grey", lwd = 0.5)
-world_studies
-
-tmap_save(world_studies, "world_studies.svg", device = svglite::svglite)
 ```
