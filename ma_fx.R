@@ -144,7 +144,8 @@ forest_basic <- function(ma, fix, rand) {
           leftcols = c("study"),
           leftlabs = c ("Study"),
           label.left = "No effect",
-          label.right = "Effect"
+          label.right = "Effect",
+          col.square = "grey20"
          )
 }
 
@@ -164,11 +165,78 @@ forest_rev5 <- function(ma, xl, xu) {
   )
 }
 
-# Meta-regression for average exposure
+# Forest lancet
+forest_lancet_pm <- function(ma, xl, xu) {
+  forest(ma,
+         prediction = F,
+         print.tau2 = T,
+         xlim = c(xl, xu),
+         layout = "RevMan5",
+         label.left = "No effect",
+         label.right = "Increased risk",
+         col.square = "grey50",
+         col.square.lines = "black",
+         col.lines = "black",
+         col.inside = "black")
+  
+  }
+
+forest_lancet_no <- function(ma, xl, xu) {
+  forest(ma,
+         prediction = F,
+         print.tau2 = T,
+         xlim = c(xl, xu),
+         layout = "RevMan5",
+         label.left = "No effect",
+         label.right = "Increased risk",
+         col.square = "orange1",
+         col.square.lines = "black",
+         col.lines = "black",
+         col.inside = "black")
+  
+}
+
+forest_lancet_o <- function(ma, xl, xu) {
+  forest(ma,
+         prediction = F,
+         print.tau2 = T,
+         xlim = c(xl, xu),
+         layout = "RevMan5",
+         label.left = "No effect",
+         label.right = "Increased risk",
+         col.square = "cornflowerblue",
+         col.square.lines = "black",
+         col.lines = "black",
+         col.inside = "black")
+}
+
+
+
+
+# Exploratory meta-regression for individual study co-variates
 # ma: input meta-analysis object (from metagen)
+# Average exposure
 mregExp <- function(ma){
   metareg(ma, ~avg.exp, rm.na = T)
 }
+
+# Continent
+mregCon <- function(ma){
+  metareg(ma, ~region, rm.na = T)
+}
+# Sex/gender proportion
+mregSex <- function(ma){
+  metareg(ma, ~sex.pf, rm.na = T)
+}
+# Case definition of asthma
+mregCase <- function(ma){
+  metareg(ma, ~case.def, rm.na = T)
+}
+# Adjustment for co-pollutants
+mregCopol <- function(ma){
+  metareg(ma, ~adj.pol, rm.na = T)
+}
+
 # Meta-regression for all other variables
 # ma: input meta-analysis object (from metagen)
 mregAll <- function(ma){

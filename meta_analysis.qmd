@@ -11,6 +11,7 @@ editor:
 ---
 
 # Importing dependencies: meta package, here, and dpylr
+
 ```{r}
 library(meta)
 library(here)
@@ -18,17 +19,19 @@ library(dplyr)
 ```
 
 # Source of functions for later.
+
 ```{r}
 source(here("ma_fx.R"))
 ```
 
 # Reading CSV file of study effect size data.
+
 ```{r}
 ma <- read.csv(here("data", "study_data.csv"), header = T, sep = ",")
 ```
 
-
 ## Filtering PM2.5 and NO2 dataframes and data manipulation
+
 ```{r}
 # PM2.5
 ma.PM25.all <- ma %>%
@@ -70,20 +73,26 @@ ma.O3.all <- ma %>%
 ```
 
 # Performing meta-analysis
+
 ## 1 - Effect size estimates (fully adjusted), sanity check
+
 ```{r}
 pm1 <- meta_analyze_1(ma.PM25.all, "Step 1 - PM2.5")
 no1 <- meta_analyze_1(ma.NO2.all, "Step 1 - NO2")
 o1 <- meta_analyze_1(ma.O3.all, "Step 1 - O3")
 
 ```
-## 2 - Effect size estimates (fully adjusted), standardized to increment (PM2.5: 5ug/m^3, NO2: 10 ug/m^3, O3: 60 ug/m^3)
+
+## 2 - Effect size estimates (fully adjusted), standardized to increment (PM2.5: 5ug/m\^3, NO2: 10 ug/m\^3, O3: 60 ug/m\^3)
+
 ```{r}
 pm2 <- meta_analyze_2(ma.PM25.all, "Step 2 - PM2.5")
 no2 <- meta_analyze_2(ma.NO2.all, "Step 2 - NO2")
 o2 <- meta_analyze_2(ma.O3.all, "Step 2 - O3")
 ```
-## 3 - Effect size estimates (fully adjusted), converted to relative risk, standardized to increment (PM2.5: 5ug/m^3, NO2: 10 ug/m^3, O3: 60 ug/m^3)
+
+## 3 - Effect size estimates (fully adjusted), converted to relative risk, standardized to increment (PM2.5: 5ug/m\^3, NO2: 10 ug/m\^3, O3: 60 ug/m\^3)
+
 ```{r}
 pm3 <- meta_analyze_3(ma.PM25.all, "Step 3 - PM2.5")
 no3 <- meta_analyze_3(ma.NO2.all, "Step 3 - NO2")
@@ -91,6 +100,7 @@ o3 <- meta_analyze_3(ma.O3.all, "Step 3 - O3")
 ```
 
 # Funnel plots
+
 ```{r}
 pm3_fun <- fun(pm3, FALSE)
 no3_fun <- fun(no3, FALSE)
@@ -112,6 +122,7 @@ dev.off()
 ```
 
 ## Funnel plots - Begg's test
+
 ```{r}
 pm3_bias <- funBias(pm3)
 no3_bias <- funBias(no3)
@@ -123,59 +134,77 @@ o3_bias
 ```
 
 # Printing forest plots
+
 ```{r}
 # Step 1 (sanity check):
-pm1f <- forest_rev5(pm1, 0.5, 2)
-no1f <- forest_rev5(no1, 0.1, 11)
-o1f <- forest_rev5(o1, 0.2, 6)
+pm1f <- forest_lancet_pm(pm1, 0.5, 2)
+no1f <- forest_lancet_no(no1, 0.1, 11)
+o1f <- forest_lancet_o(o1, 0.2, 6)
 
 # Step 2 (supplement figure)
-pm2f <- forest_rev5(pm2, 0.5, 2)
-no2f <- forest_rev5(no2, 0.1, 11)
-o2f <- forest_rev5(o2, 0.2, 6)
+pm2f <- forest_lancet_pm(pm2, 0.5, 2)
+no2f <- forest_lancet_no(no2, 0.1, 11)
+o2f <- forest_lancet_o(o2, 0.2, 6)
 
 # Step 3 (For in text figure)
-pm3fr <- forest_rev5(pm3, 0.5, 2)
-no3fr <- forest_rev5(no3, 0.1, 11)
-o3fr <- forest_rev5(o3, 0.2, 6)
+pm3fr <- forest_lancet_pm(pm3, 0.5, 2)
+no3fr <- forest_lancet_no(no3, 0.1, 11)
+o3fr <- forest_lancet_o(o3, 0.2, 6)
 ```
 
 # Saving forest plots
+
 ```{r}
 #
 pdf(file = "pm2fr.pdf", width = 11, height = 6)
-forest_rev5(pm2, 0.5, 2)
+forest_lancet_pm(pm2, 0.5, 2)
 dev.off()
 
 
 pdf(file = "no2fr.pdf", width = 11, height = 6)
-forest_rev5(no2, 0.1, 15)
+forest_lancet_no(no2, 0.1, 15)
 dev.off()
 
 pdf(file = "o2fr.pdf", width = 11, height = 6)
-forest_rev5(o2, 0.1, 10)
+forest_lancet_o(o2, 0.1, 10)
 dev.off()
 
 
 pdf(file = "pm3fr.pdf", width = 11, height = 6)
-forest_rev5(pm3, 0.5, 2)
+forest_lancet_pm(pm3, 0.5, 2)
 dev.off()
 
 pdf(file = "no3fr.pdf", width = 11, height = 6)
-forest_rev5(no3, 0.1, 15)
+forest_lancet_no(no3, 0.1, 15)
 dev.off()
 
 pdf(file = "o3fr.pdf", width = 11, height = 6)
-forest_rev5(o3, 0.1, 10)
+forest_lancet_o(o3, 0.1, 10)
 dev.off()
 ```
 
-
 # Meta-regression
+
 ```{r}
 pm_reg_exp <- mregExp(pm3)
 no_reg_exp <- mregExp(no3)
 o_reg_exp <- mregExp(o3)
+
+pm_reg_con <- mregCon(pm3)
+no_reg_con <- mregCon(no3)
+o_reg_con <- mregCon(o3)
+
+pm_reg_sex <- mregSex(pm3)
+no_reg_sex <- mregSex(no3)
+o_reg_sex <- mregSex(o3)
+
+pm_reg_case <- mregCase(pm3)
+no_reg_case <- mregCase(no3)
+o_reg_case <- mregCase(o3)
+
+pm_reg_copol <- mregCopol(pm3)
+no_reg_copol <- mregCopol(no3)
+n_reg_copol <- mregCopol(o3)
 
 pm_reg_all <- mregAll(pm3)
 no_reg_all <- mregAll(no3)
@@ -184,7 +213,25 @@ o_reg_all <- mregAll(o3)
 pm_reg_exp
 no_reg_exp
 o_reg_exp
-pm_reg_all
+
+pm_reg_con
+no_reg_con
+o_reg_con
+
+pm_reg_sex
+no_reg_sex
+o_reg_sex
+
+pm_reg_case
+no_reg_case
+o_reg_case
+
+pm_reg_copol
+no_reg_copol
+n_reg_copol
+
+pm_reg_all 
 no_reg_all
 o_reg_all
+
 ```
